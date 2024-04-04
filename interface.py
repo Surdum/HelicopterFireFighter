@@ -9,9 +9,15 @@ class UserInterface:
     saved: bool = False
     game: 'Game'
     current_menu_option: int = 0
+    schema_choosing: bool = True
 
     @property
     def menu_options(self) -> list:
+        if self.schema_choosing:
+            return [
+                ("EMOJI", self.set_schema),
+                ("ASCII", self.set_schema),
+            ]
         if not self.game.game_over:
             return [
                 ("CONTINUE", self.continue_game),
@@ -19,10 +25,14 @@ class UserInterface:
                 ("LOAD", self.load_game),
                 ("EXIT", self.exit)
             ]
-        else:
-            return [
-                ("EXIT", self.exit)
-            ]
+        return [
+            ("EXIT", self.exit)
+        ]
+
+    def set_schema(self):
+        self.schema_choosing = False
+        self.game.set_schema(self.current_menu_option)
+
 
     def continue_game(self) -> None:  # noqa
         self.clear_bottom_area()
@@ -112,6 +122,10 @@ class UserInterface:
     def update_menu(self):
         self.clear_bottom_area()
         options = self.menu_options
+        if self.schema_choosing:
+            y = 2
+        else:
+            y = GAME_FIELD_HEIGHT + 2
         Console.print(
             "  ".join([(">" if self.current_menu_option == i else " ") + name for i, (name, _) in enumerate(options)]),
-            3, GAME_FIELD_HEIGHT + 2)
+            3, y)

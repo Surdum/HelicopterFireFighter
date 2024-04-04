@@ -1,6 +1,11 @@
 import sys
 
 
+class Schema:
+    EMOJI = 0
+    ASCII = 1
+
+
 class TileType:
     OUT_OF_GAME_FIELD = -2
     NOTHING = -1
@@ -23,48 +28,82 @@ class TileType:
 
 
 class _Tiles:
-    BLACK_CIRCLE = "⚫"
-    WHITE_CIRCLE = "⚪"
-    BLUE_CIRCLE = "🔵"
-    RED_CIRCLE = "🔴"
-    RED_HEART = "❤️"
-    BLACK_HEART = "🖤"
-    HOSPITAL = "🏥"
-    GROUND = "🟫"
-    CURSER_GROUND = "🏾"
-    WATER = "🟦"
-    WAVE = "🌊"
-    GRASS = "🟩"
-    WHEAT = "🌾"
-    TREES = "🌲"  # "🌳"
-    FIRE = "🔥"
-    ASH = "✶" if sys.platform == "win32" else "🌫"
-    HELICOPTER = "🚁"
-    SHOP = "🛒"
-    CLOUD = "☁" if sys.platform == "win32" else "☁️"
-    LIGHTNING = "⚡"  # "🌩️"
-    DEATH = "💀"
+    ...
 
 
-_tile_mapping = {
-    TileType.TREE: _Tiles.TREES,
-    TileType.WATER: _Tiles.WATER,
-    TileType.GROUND: _Tiles.GROUND,
-    TileType.FIRE: _Tiles.FIRE,
-    TileType.ASH: _Tiles.ASH,
-    TileType.HOSPITAL: _Tiles.HOSPITAL,
-    TileType.WHEAT: _Tiles.WHEAT,
-    TileType.HELICOPTER: _Tiles.HELICOPTER,
-    TileType.NOTHING: _Tiles.GROUND,
-    TileType.CLOUD: _Tiles.CLOUD,
-    TileType.WATER_TANK: _Tiles.BLUE_CIRCLE,
-    TileType.WATER_TANK_EMPTY: _Tiles.BLACK_CIRCLE,
-    TileType.HEALTH: _Tiles.RED_HEART,
-    TileType.HEALTH_EMPTY: _Tiles.BLACK_HEART,
-    TileType.SHOP: _Tiles.SHOP,
-    TileType.LIGHTNING: _Tiles.LIGHTNING,
-    TileType.DEATH: _Tiles.DEATH,
-}
+_tile_mapping = {}
+
+
+def apply_schema(schema: Schema) -> None:
+    global _tile_mapping
+    
+    if schema == Schema.ASCII:
+        sign_schema = {
+            "BLACK_CIRCLE": "_",
+            "BLUE_CIRCLE": "#",
+            "RED_HEART": "#",
+            "BLACK_HEART": "_",
+            "HOSPITAL": "+",
+            "GROUND": " ",
+            "WATER": "#",
+            "WAVE": "#",
+            "TREES": "|",
+            "FIRE": "F",
+            "ASH": "_",
+            "HELICOPTER": "@",
+            "SHOP": "&",
+            "CLOUD": "O",
+            "LIGHTNING": "0",
+            "DEATH": "X",
+        }
+    elif schema == Schema.EMOJI:
+        sign_schema = {
+            "BLACK_CIRCLE": "⚫",
+            "WHITE_CIRCLE": "⚪",
+            "BLUE_CIRCLE": "🔵",
+            "RED_CIRCLE": "🔴",
+            "RED_HEART": "❤️",
+            "BLACK_HEART": "🖤",
+            "HOSPITAL": "🏥",
+            "GROUND": "🟫",
+            "CURSER_GROUND": "🏾",
+            "WATER": "🟦",
+            "WAVE": "🌊",
+            "GRASS": "🟩",
+            "WHEAT": "🌾",
+            "TREES": "🌲",  # "🌳"
+            "FIRE": "🔥",
+            "ASH": "✶" if sys.platform == "win32" else "🌫",
+            "HELICOPTER": "🚁",
+            "SHOP": "🛒",
+            "CLOUD": "☁" if sys.platform == "win32" else "☁️",
+            "LIGHTNING": "⚡",  # "🌩️"
+            "DEATH": "💀",
+        }
+    else:
+        raise
+    for k, v in sign_schema.items():
+        setattr(_Tiles, k, v)
+
+    _tile_mapping = {
+        TileType.TREE: _Tiles.TREES,
+        TileType.WATER: _Tiles.WATER,
+        TileType.GROUND: _Tiles.GROUND,
+        TileType.FIRE: _Tiles.FIRE,
+        TileType.ASH: _Tiles.ASH,
+        TileType.HOSPITAL: _Tiles.HOSPITAL,
+        # TileType.WHEAT: _Tiles.WHEAT,
+        TileType.HELICOPTER: _Tiles.HELICOPTER,
+        TileType.NOTHING: _Tiles.GROUND,
+        TileType.CLOUD: _Tiles.CLOUD,
+        TileType.WATER_TANK: _Tiles.BLUE_CIRCLE,
+        TileType.WATER_TANK_EMPTY: _Tiles.BLACK_CIRCLE,
+        TileType.HEALTH: _Tiles.RED_HEART,
+        TileType.HEALTH_EMPTY: _Tiles.BLACK_HEART,
+        TileType.SHOP: _Tiles.SHOP,
+        TileType.LIGHTNING: _Tiles.LIGHTNING,
+        TileType.DEATH: _Tiles.DEATH,
+    }
 
 
 class Layers:

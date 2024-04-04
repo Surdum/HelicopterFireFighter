@@ -1,5 +1,5 @@
 from generators import *
-from tiles import TileType, get_tile, Layers, get_layer
+from tiles import TileType, get_tile, Layers, get_layer, apply_schema, Schema
 from console import Console
 from config import *
 
@@ -275,8 +275,13 @@ class Game(DumpLoad):
     pause_ts: float = 0.
     playing: bool = True
     game_over: bool = False
+    schema: Schema = None
 
     fields_to_dump_load = ["ticks", "last_tick_ts", "pause_ts"]
+
+    def set_schema(self, schema: Schema):
+        self.schema = schema
+        apply_schema(schema)
 
     def pause_game(self):
         self.paused = True
@@ -309,7 +314,9 @@ class Game(DumpLoad):
         self.ui = UserInterface()
         self.ui.game = self
         self.controller = Controller()
-        #
+        self.controller.listen()
+
+    def generate_map(self):
         self.game_field.fill(0, 0, GAME_FIELD_WIDTH, GAME_FIELD_HEIGHT, TileType.GROUND)
         #
         self.game_field.generate(LakeGenerator(max_limit=randint(10, 20)))
@@ -325,8 +332,6 @@ class Game(DumpLoad):
         self.game_field.generate(UpgradeShopGenerator())
         #
         self.game_field.add_element(*self.player.coordinates, self.player.tile_type, only_visual=True)
-
-        self.controller.listen()
 
     def game_tick(self):
         # move clouds
@@ -417,6 +422,11 @@ class Game(DumpLoad):
 
     def run(self):
         self.init()
+        self.pause_game()
+        while self.schema is None:
+            time.sleep(TICK_TIME)
+        self.continue_game()
+        self.generate_map()
         while self.playing:
             self.tick()
             time.sleep(TICK_TIME)
