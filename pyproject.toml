@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "heliff"
+version = "0.1.0"
+description = "Helicopter Fire Fighter"
+authors = ["Babaev Georgii <babaev.gv@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "^2.5.2"
+pynput = "^1.7.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
